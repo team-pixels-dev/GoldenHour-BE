@@ -1,4 +1,4 @@
-package com.example.goldenhour.jwt;
+package com.example.goldenhour.security.jwt;
 
 import com.example.goldenhour.dto.CustomOAuth2User;
 import com.example.goldenhour.dto.UserDTO;

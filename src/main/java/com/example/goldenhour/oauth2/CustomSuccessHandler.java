@@ -1,7 +1,7 @@
 package com.example.goldenhour.oauth2;
 
 import com.example.goldenhour.dto.CustomOAuth2User;
-import com.example.goldenhour.jwt.JWTUtil;
+import com.example.goldenhour.security.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

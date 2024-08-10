@@ -1,4 +1,4 @@
-package com.example.goldenhour.jwt;
+package com.example.goldenhour.security.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

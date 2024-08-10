@@ -1,7 +1,7 @@
-package com.example.goldenhour.config;
+package com.example.goldenhour.security.config;
 
-import com.example.goldenhour.jwt.JWTFilter;
-import com.example.goldenhour.jwt.JWTUtil;
+import com.example.goldenhour.security.jwt.JWTFilter;
+import com.example.goldenhour.security.jwt.JWTUtil;
 import com.example.goldenhour.oauth2.CustomSuccessHandler;
 import com.example.goldenhour.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -66,15 +65,18 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
-        http
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+//        http
+//                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+//
+//        http
+//                .oauth2Login((oauth2) -> oauth2
+//                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+//                                .userService(customOAuth2UserService))
+//                        .successHandler(customSuccessHandler)
+//                );
 
         http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                );
+                .addFilterAt(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .authorizeHttpRequests((auth) -> auth
