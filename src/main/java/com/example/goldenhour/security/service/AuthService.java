@@ -53,6 +53,23 @@ public class AuthService {
         return makeUserDto(userEntity);
     }
 
+    private UserEntity getUserEntityByUserId(String userId) {
+
+        return userRepository.findByUsername(userId);
+    }
+
+    private boolean checkLoginUser(LoginRequestDTO loginRequestDTO, OAuth2Response oAuth2Response) {
+
+        String userId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        return (loginRequestDTO.getUserId().equals(userId));
+    }
+
+    private UserEntity join(LoginRequestDTO loginRequestDTO, OAuth2Response oAuth2Response) {
+        UserEntity userEntity = makeUserEntity(loginRequestDTO, oAuth2Response);
+        userRepository.save(userEntity);
+        return userEntity;
+    }
+
     private UserEntity makeUserEntity(LoginRequestDTO loginRequestDTO, OAuth2Response oAuth2Response) {
         UserEntity userEntity;
         userEntity = new UserEntity();
@@ -64,10 +81,15 @@ public class AuthService {
         return userEntity;
     }
 
-    private UserEntity join(LoginRequestDTO loginRequestDTO, OAuth2Response oAuth2Response) {
-        UserEntity userEntity = makeUserEntity(loginRequestDTO, oAuth2Response);
-        userRepository.save(userEntity);
-        return userEntity;
+    private UserDTO makeUserDto(UserEntity userEntity) {
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setRole(userEntity.getRole());
+        userDTO.setEmail(userEntity.getEmail());
+        userDTO.setUsername(userEntity.getUsername());
+        userDTO.setName(userEntity.getName());
+
+        return userDTO;
     }
 
     public Cookie createCookie(String key, String value) {
@@ -80,34 +102,12 @@ public class AuthService {
         return cookie;
     }
 
-    private boolean checkLoginUser(LoginRequestDTO loginRequestDTO, OAuth2Response oAuth2Response) {
-
-        String userId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        return (loginRequestDTO.getUserId().equals(userId));
-    }
-
-    private UserEntity getUserEntityByUserId(String userId) {
-
-        return userRepository.findByUsername(userId);
-    }
-
     public String createJwt(UserDTO userDTO) {
 
         String userId = userDTO.getUsername();
         String role = userDTO.getRole();
 
         return jwtUtil.createJwt(userId, role, 60 * 60 * 60L);
-    }
-
-    private UserDTO makeUserDto(UserEntity userEntity) {
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setRole(userEntity.getRole());
-        userDTO.setEmail(userEntity.getEmail());
-        userDTO.setUsername(userEntity.getUsername());
-        userDTO.setName(userEntity.getName());
-
-        return userDTO;
     }
 
 }
