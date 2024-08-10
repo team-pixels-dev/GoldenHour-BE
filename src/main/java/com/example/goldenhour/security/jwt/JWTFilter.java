@@ -1,7 +1,9 @@
-package com.example.goldenhour.security.jwt;
+package com.example.goldenhour.security.filter;
 
 import com.example.goldenhour.dto.CustomOAuth2User;
 import com.example.goldenhour.dto.UserDTO;
+import com.example.goldenhour.security.dto.CustomUserDetails;
+import com.example.goldenhour.security.jwt.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -33,11 +35,11 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
+//
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         String authorization = null;
         Cookie[] cookies = request.getCookies();
@@ -75,9 +77,13 @@ public class JWTFilter extends OncePerRequestFilter {
         userDTO.setUsername(username);
         userDTO.setRole(role);
 
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
+//        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+        CustomUserDetails customUserDetails = new CustomUserDetails(userDTO);
+
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
