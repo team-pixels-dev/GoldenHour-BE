@@ -1,5 +1,6 @@
 package com.example.goldenhour.security.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -29,9 +30,9 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
-    public Boolean isExpired(String token) {
+    public Boolean isExpired(String token) throws ExpiredJwtException {
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date(System.currentTimeMillis()));
     }
 
     public String createJwt(String username, String role, Long expiredMs) {
@@ -44,4 +45,6 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
     }
+
+
 }

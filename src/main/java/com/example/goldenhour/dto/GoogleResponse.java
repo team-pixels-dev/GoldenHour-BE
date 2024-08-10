@@ -1,15 +1,17 @@
 package com.example.goldenhour.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
+@Getter
+@NoArgsConstructor
 public class GoogleResponse implements OAuth2Response {
 
-    private final Map<String, Object> attribute;
-
-    public GoogleResponse(Map<String, Object> attribute) {
-
-        this.attribute = attribute;
-    }
+    public String id;
+    public String name;
+    public String email;
 
     @Override
     public String getProvider() {
@@ -20,18 +22,18 @@ public class GoogleResponse implements OAuth2Response {
     @Override
     public String getProviderId() {
 
-        return attribute.get("sub").toString();
+        return id;
     }
 
     @Override
     public String getEmail() {
 
-        return attribute.get("email").toString();
+        return email;
     }
 
     @Override
     public String getName() {
 
-        return attribute.get("name").toString();
+        return name;
     }
 }

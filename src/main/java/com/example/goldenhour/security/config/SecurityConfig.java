@@ -1,36 +1,36 @@
 package com.example.goldenhour.security.config;
 
 import com.example.goldenhour.security.jwt.JWTFilter;
+import com.example.goldenhour.security.jwt.JWTService;
 import com.example.goldenhour.security.jwt.JWTUtil;
-import com.example.goldenhour.oauth2.CustomSuccessHandler;
-import com.example.goldenhour.service.CustomOAuth2UserService;
+import com.example.goldenhour.security.handler.CustomSuccessHandler;
+import com.example.goldenhour.security.oauth2.OAuth2UserInfoProxy;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.Map;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
-
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.customSuccessHandler = customSuccessHandler;
-        this.jwtUtil = jwtUtil;
-    }
+    private final JWTService jwtService;
+    private final Map<String, OAuth2UserInfoProxy> oAuth2UserInfoProxyMap;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -65,27 +65,21 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
-//        http
-//                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-//
-//        http
-//                .oauth2Login((oauth2) -> oauth2
-//                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-//                                .userService(customOAuth2UserService))
-//                        .successHandler(customSuccessHandler)
-//                );
-
         http
-                .addFilterAt(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new JWTFilter(jwtUtil, jwtService, oAuth2UserInfoProxyMap), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/login/**").permitAll()
                         .anyRequest().authenticated());
 
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http
+                .exceptionHandling((handler) -> handler.authenticationEntryPoint(authenticationEntryPoint));
 
         return http.build();
     }

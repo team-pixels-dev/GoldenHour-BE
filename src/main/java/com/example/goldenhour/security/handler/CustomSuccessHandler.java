@@ -1,4 +1,4 @@
-package com.example.goldenhour.oauth2;
+package com.example.goldenhour.security.handler;
 
 import com.example.goldenhour.dto.CustomOAuth2User;
 import com.example.goldenhour.security.jwt.JWTUtil;

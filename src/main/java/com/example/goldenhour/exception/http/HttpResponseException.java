@@ -1,4 +1,4 @@
-package com.example.goldenhour.exception;
+package com.example.goldenhour.exception.http;
 
 import org.springframework.http.HttpStatus;
 
@@ -7,7 +7,10 @@ import java.util.List;
 
 public abstract class HttpResponseException extends RuntimeException {
 
-    Http400ResponseException
+    public HttpResponseException(String message) {
+
+        super(message);
+    }
 
     abstract public List<?> body();
     abstract public HttpStatus status();

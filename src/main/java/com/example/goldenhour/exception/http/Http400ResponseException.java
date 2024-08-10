@@ -1,9 +1,8 @@
-package com.example.goldenhour.exception;
+package com.example.goldenhour.exception.http;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
