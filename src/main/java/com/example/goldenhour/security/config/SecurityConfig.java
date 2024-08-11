@@ -3,7 +3,6 @@ package com.example.goldenhour.security.config;
 import com.example.goldenhour.security.jwt.JWTFilter;
 import com.example.goldenhour.security.jwt.JWTService;
 import com.example.goldenhour.security.jwt.JWTUtil;
-import com.example.goldenhour.security.handler.CustomSuccessHandler;
 import com.example.goldenhour.security.oauth2.OAuth2UserInfoProxy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ import java.util.Map;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
     private final JWTService jwtService;
     private final Map<String, OAuth2UserInfoProxy> oAuth2UserInfoProxyMap;
