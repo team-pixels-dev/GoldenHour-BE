@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final JWTService jwtService;
     private final Map<String, OAuth2UserInfoProxy> oAuth2UserInfoProxyMap;
-    private final AuthenticationEntryPoint authenticationEntryPoint;
+//    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -70,6 +70,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/logout").permitAll()
                         .anyRequest().authenticated());
 
         http
@@ -77,7 +79,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
-                .exceptionHandling((handler) -> handler.authenticationEntryPoint(authenticationEntryPoint));
+                .logout((auth) -> auth.disable());
 
         return http.build();
     }

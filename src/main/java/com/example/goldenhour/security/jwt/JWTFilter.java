@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -31,45 +32,47 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String requestUri = request.getRequestURI();
 
-        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+        if (requestUri.matches("^\\/login(?:\\/.*)?$") || requestUri.matches("^\\/reissue") || requestUri.matches("^\\/logout")) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authorization = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
+        String accessToken = request.getHeader("access");
 
-            System.out.println(cookie.getName());
-            if (cookie.getName().equals("Authorization")) {
+        if (accessToken == null) {
 
-                authorization = cookie.getValue();
-            }
-        }
-
-        if (authorization == null) {
-
-            System.out.println("Token null");
             filterChain.doFilter(request, response);
 
             return;
         }
-
-        String jwtToken = authorization;
 
         try {
-            jwtUtil.isExpired(jwtToken);
+            jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            request.setAttribute("exception", e);
-            System.out.println("Token expired");
-            filterChain.doFilter(request, response);
+
+            PrintWriter writer = response.getWriter();
+            writer.println("access token expired");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             return;
         }
 
-        String username = jwtUtil.getUsername(jwtToken);
-        String role = jwtUtil.getRole(jwtToken);
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            PrintWriter writer = response.getWriter();
+            writer.print("invalid access token");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            return;
+        }
+
+        String username = jwtUtil.getUsername(accessToken);
+        String role = jwtUtil.getRole(accessToken);
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(username);

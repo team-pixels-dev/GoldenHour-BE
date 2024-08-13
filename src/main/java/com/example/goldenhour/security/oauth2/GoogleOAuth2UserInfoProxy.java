@@ -4,7 +4,6 @@ import com.example.goldenhour.dto.GoogleResponse;
 import com.example.goldenhour.dto.OAuth2Response;
 import com.example.goldenhour.exception.http.Http400ResponseException;
 import com.example.goldenhour.exception.http.Http500ResponseException;
-import okhttp3.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
