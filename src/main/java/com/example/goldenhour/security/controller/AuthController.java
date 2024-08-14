@@ -6,6 +6,7 @@ import com.example.goldenhour.security.dto.LoginRequestDTO;
 import com.example.goldenhour.security.jwt.JWTUtil;
 import com.example.goldenhour.security.repository.RefreshRepository;
 import com.example.goldenhour.security.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +23,8 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/login/{providerName}")
+    @Operation(summary = "로그인", description = "유저 정보와 액세스 토큰을 담아 로그인 요청. userId에 소셜 로그인 공급자명 + OAuth2 서버에서 발급해주는 ID값을 넣어 요청.")
+    @PostMapping("/login/{providerName}")
     public ResponseEntity<?> socialLogin(
             @PathVariable("providerName") String providerName,
             @RequestBody LoginRequestDTO loginRequestDTO,
@@ -43,6 +45,7 @@ public class AuthController {
                 .build();
     }
 
+    @Operation(summary = "access 토큰 재발급", description = "Header에 access 토큰, Cookie에 refresh 토큰을 넣어 요청. access 토큰의 헤더 키 값은 'access'")
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
@@ -60,7 +63,8 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/logout")
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
         Cookie[] cookies = request.getCookies();
